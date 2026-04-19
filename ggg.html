@@ -206,7 +206,7 @@
     <div class="topbar">
       <div class="brand">
         <h1>Clipboard</h1>
-        <p>Dark theme · autosave · realtime sync · base64 photos</p>
+        <p>ver. 0.1.1</p>
       </div>
       <button class="btn" id="copyLinkBtn" type="button">Ссылка</button>
     </div>
@@ -243,16 +243,16 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
-    import { getDatabase, ref as dbRef, set, get, onValue, push, remove, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js";
+    import { getDatabase, ref as dbRef, set, get, onValue, push, remove, update, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js";
 
     const firebaseConfig = {
-      apiKey: "AIzaSyD9mzEmeC84ZzGyFjgfAAeipk7hNBBJOcE", // Это значение нужно получить из консоли Firebase.
-      authDomain: "clipboard-cd9f9.firebaseapp.com",
-      databaseURL: "https://clipboard-cd9f9-default-rtdb.asia-southeast1.firebasedatabase.app/",
-      projectId: "clipboard-cd9f9",
-      storageBucket: "clipboard-cd9f9.appspot.com",
-      messagingSenderId: "151751834553",
-      appId: "1:151751834553:web:abcd1b0c8b148a212a5468" // Это значение нужно получить из консоли Firebase.
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT.firebaseapp.com",
+      databaseURL: "https://YOUR_PROJECT-default-rtdb.firebaseio.com",
+      projectId: "YOUR_PROJECT",
+      storageBucket: "YOUR_PROJECT.appspot.com",
+      messagingSenderId: "YOUR_SENDER_ID",
+      appId: "YOUR_APP_ID"
     };
 
     const app = initializeApp(firebaseConfig);
@@ -296,13 +296,11 @@
       return escapeHtml(text).replace(/\n/g,'<br>').replace(/`([^`]+)`/g,'<code>$1</code>');
     }
 
-    function syncPreview(){
-      preview.innerHTML = renderText(editor.value);
-    }
+    function syncPreview(){ preview.innerHTML = renderText(editor.value); }
 
     async function saveDoc(){
       suppressRemote = true;
-      await set(docRef, {
+      await update(docRef, {
         text: editor.value,
         updatedAt: serverTimestamp()
       });
@@ -432,7 +430,6 @@
       const idx = e.target?.dataset?.remove;
       if (idx === undefined) return;
       selectedItems.splice(Number(idx), 1);
-      const dt = new DataTransfer();
       photoInput.value = '';
       renderSelected();
     });
@@ -442,7 +439,6 @@
         setStatus('Фото не выбраны.');
         return;
       }
-
       setStatus('Сохранение фото...');
       for (const item of selectedItems) {
         const keyRef = push(photosRef);
@@ -453,7 +449,6 @@
           createdAt: serverTimestamp()
         });
       }
-
       selectedItems = [];
       photoInput.value = '';
       selectedPhotos.innerHTML = '';
